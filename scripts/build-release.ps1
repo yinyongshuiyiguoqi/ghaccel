@@ -67,4 +67,5 @@ $lines | Set-Content (Join-Path $dist "sha256sums.txt") -Encoding ascii
 
 Remove-Item Env:GOOS, Env:GOARCH -ErrorAction SilentlyContinue
 Write-Host ""
-Get-ChildItem $dist -File | Select-Object Name, Length | Format-Table -AutoSize
+$table = Get-ChildItem $dist -File | Select-Object Name, Length | Format-Table -AutoSize | Out-String
+Write-Host $table

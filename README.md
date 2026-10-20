@@ -53,6 +53,8 @@ Get-FileHash .\ghaccel_0.1.0_windows_amd64.zip -Algorithm SHA256
 
 程序带图标和文件版本信息。它是命令行工具，双击只会闪一下窗口，请从终端运行；日常使用建议放到固定目录并加入 PATH。
 
+> 未做代码签名，Windows SmartScreen 可能提示“未知发布者”。请先核对 `sha256sums.txt` 再运行。
+
 ### 用 Go 安装
 
 需要 Go 1.27+：
