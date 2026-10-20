@@ -31,13 +31,16 @@ jobs:
           GOARCH: ${{ matrix.goarch }}
           CGO_ENABLED: "0"
         run: |
-          go build -trimpath -ldflags "-s -w -X github.com/yinyongshuiyiguoqi/ghaccel/internal/version.Version=${GITHUB_REF_NAME}" \
-            -o ghaccel${{ matrix.ext }} ./cmd/ghaccel
+          LDFLAGS="-s -w -X github.com/yinyongshuiyiguoqi/ghaccel/internal/version.Version=${GITHUB_REF_NAME}"
+          go build -trimpath -ldflags "$LDFLAGS" -o ghaccel${{ matrix.ext }} ./cmd/ghaccel
+          if [ "${{ matrix.goos }}" = "windows" ]; then
+            go build -trimpath -ldflags "$LDFLAGS -H=windowsgui" -o ghaccel-gui.exe ./cmd/ghaccel-gui
+          fi
           mkdir -p dist
           if [ "${{ matrix.goos }}" = "windows" ]; then
-            zip -j "dist/ghaccel_${GITHUB_REF_NAME}_${{ matrix.goos }}_${{ matrix.goarch }}.zip" ghaccel.exe README.md LICENSE
+            zip -j "dist/ghaccel_${GITHUB_REF_NAME}_${{ matrix.goos }}_${{ matrix.goarch }}.zip" ghaccel.exe ghaccel-gui.exe README.md README.en.md LICENSE
           else
-            tar -czf "dist/ghaccel_${GITHUB_REF_NAME}_${{ matrix.goos }}_${{ matrix.goarch }}.tar.gz" ghaccel README.md LICENSE
+            tar -czf "dist/ghaccel_${GITHUB_REF_NAME}_${{ matrix.goos }}_${{ matrix.goarch }}.tar.gz" ghaccel README.md README.en.md LICENSE
           fi
       - uses: actions/upload-artifact@v4
         with:
@@ -57,3 +60,4 @@ jobs:
       - uses: softprops/action-gh-release@v2
         with:
           files: dist/*
+          overwrite_files: true
