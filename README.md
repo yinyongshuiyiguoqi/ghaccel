@@ -27,19 +27,55 @@ DoH（阿里 / DNSPod） ─┐
 
 ## 安装
 
+### 下载现成程序（推荐）
+
+Releases 提供 6 个平台的压缩包，以及 `sha256sums.txt`：
+
+| 平台 | 文件 |
+|---|---|
+| Windows x64 | `ghaccel_0.1.0_windows_amd64.zip` |
+| Windows ARM64 | `ghaccel_0.1.0_windows_arm64.zip` |
+| Linux x64 / ARM64 | `ghaccel_0.1.0_linux_*.tar.gz` |
+| macOS Intel / Apple Silicon | `ghaccel_0.1.0_darwin_*.tar.gz` |
+
+Windows 用法：
+
+```powershell
+# 解压后先校验
+Get-FileHash .\ghaccel_0.1.0_windows_amd64.zip -Algorithm SHA256
+# 与 sha256sums.txt 中对应行比对
+
+.\ghaccel.exe doctor
+.\ghaccel.exe once --dry-run
+# 管理员终端
+.\ghaccel.exe once
+```
+
+程序带图标和文件版本信息。它是命令行工具，双击只会闪一下窗口，请从终端运行；日常使用建议放到固定目录并加入 PATH。
+
+### 用 Go 安装
+
 需要 Go 1.27+：
 
 ```bash
 go install github.com/yinyongshuiyiguoqi/ghaccel/cmd/ghaccel@latest
 ```
 
-或从 Releases 下载对应平台的压缩包。自行构建：
+### 自行构建
 
 ```bash
 git clone https://github.com/yinyongshuiyiguoqi/ghaccel.git
 cd ghaccel
 go build -trimpath -ldflags "-s -w" -o bin/ghaccel ./cmd/ghaccel
 ```
+
+打包全部平台：
+
+```powershell
+.\scripts\build-release.ps1 -Version 0.1.0
+```
+
+产物在 `dist/`，包含压缩包和校验和。
 
 ## 快速开始
 
