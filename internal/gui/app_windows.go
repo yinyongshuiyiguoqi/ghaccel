@@ -28,18 +28,20 @@ import (
 var iconPNG []byte
 
 type App struct {
-	cfg      config.Config
-	ctrl     *Controller
-	mw       *walk.MainWindow
-	ni       *walk.NotifyIcon
-	status   *walk.Label
-	counts   *walk.Label
-	table    *walk.TableView
-	logView  *walk.TextEdit
-	startBtn *walk.PushButton
-	stopBtn  *walk.PushButton
-	model    *domainModel
-	quitting bool
+	cfg       config.Config
+	ctrl      *Controller
+	mw        *walk.MainWindow
+	ni        *walk.NotifyIcon
+	status    *walk.Label
+	counts    *walk.Label
+	table     *walk.TableView
+	logView   *walk.TextEdit
+	startBtn  *walk.PushButton
+	stopBtn   *walk.PushButton
+	autoStart *walk.CheckBox
+	model     *domainModel
+	settings  Settings
+	quitting  bool
 }
 
 func Run() error {
@@ -47,7 +49,7 @@ func Run() error {
 	if err != nil {
 		return err
 	}
-	a := &App{cfg: cfg, model: &domainModel{}}
+	a := &App{cfg: cfg, model: &domainModel{}, settings: loadSettings()}
 	a.loadInitialState()
 	if err := a.build(); err != nil {
 		return err
@@ -63,6 +65,9 @@ func Run() error {
 	a.appendLog("就绪：点击“开始加速”选择最优 IP；关闭窗口会最小化到托盘。")
 	if err := a.setupTray(); err != nil {
 		return err
+	}
+	if a.settings.AutoStart {
+		a.mw.Synchronize(func() { a.start() })
 	}
 	a.mw.Run()
 	a.ctrl.Close()
@@ -97,6 +102,7 @@ func (a *App) build() error {
 					d.PushButton{Text: "立即刷新", OnClicked: a.refresh},
 					d.PushButton{Text: "恢复 hosts", OnClicked: a.restore},
 					d.PushButton{Text: "打开日志", OnClicked: a.openLog},
+					d.CheckBox{AssignTo: &a.autoStart, Text: "启动时自动加速", Checked: a.settings.AutoStart, OnCheckedChanged: a.toggleAutoStart},
 					d.HSpacer{},
 				},
 			},
@@ -245,6 +251,13 @@ func (a *App) offerElevate(err error) {
 		return
 	}
 	a.quit()
+}
+
+func (a *App) toggleAutoStart() {
+	a.settings.AutoStart = a.autoStart.Checked()
+	if err := saveSettings(a.settings); err != nil {
+		a.appendLog("! 保存设置失败: " + err.Error())
+	}
 }
 
 func (a *App) quit() {

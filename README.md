@@ -33,16 +33,18 @@ Releases 提供 6 个平台的压缩包，以及 `sha256sums.txt`：
 
 | 平台 | 文件 |
 |---|---|
-| Windows x64 | `ghaccel_0.1.0_windows_amd64.zip` |
-| Windows ARM64 | `ghaccel_0.1.0_windows_arm64.zip` |
-| Linux x64 / ARM64 | `ghaccel_0.1.0_linux_*.tar.gz` |
-| macOS Intel / Apple Silicon | `ghaccel_0.1.0_darwin_*.tar.gz` |
+| Windows x64 | `ghaccel_<版本>_windows_amd64.zip` |
+| Windows ARM64 | `ghaccel_<版本>_windows_arm64.zip` |
+| Linux x64 / ARM64 | `ghaccel_<版本>_linux_*.tar.gz` |
+| macOS Intel / Apple Silicon | `ghaccel_<版本>_darwin_*.tar.gz` |
+
+具体文件名以 Release 页面为准。
 
 Windows 用法：
 
 ```powershell
 # 解压后先校验
-Get-FileHash .\ghaccel_0.1.0_windows_amd64.zip -Algorithm SHA256
+Get-FileHash .\ghaccel_0.1.1_windows_amd64.zip -Algorithm SHA256
 # 与 sha256sums.txt 中对应行比对
 
 .\ghaccel.exe doctor
@@ -60,10 +62,19 @@ Get-FileHash .\ghaccel_0.1.0_windows_amd64.zip -Algorithm SHA256
 Windows 压缩包里同时包含 `ghaccel-gui.exe`，不习惯命令行的直接用它：
 
 - 双击启动，会请求管理员权限（写 hosts 必需）
+- 默认**启动时自动加速**，可在窗口里取消勾选
 - 主窗口显示状态、每个域名的 IP / 评分 / 来源，以及运行日志
 - 按钮：开始加速、停止、立即刷新、恢复 hosts、打开日志
 - 关闭窗口会最小化到系统托盘，加速继续在后台刷新
 - 托盘右键菜单：显示主窗口、开始 / 停止、立即刷新、退出
+
+一步安装到当前用户目录并创建桌面 / 开始菜单快捷方式（不需要管理员）：
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\install.ps1 -Launch
+```
+
+卸载：`.\scripts\uninstall.ps1`（会移除快捷方式和程序目录；hosts 块需用管理员执行 `ghaccel restore` 清理）。
 
 ![ghaccel 桌面应用](assets/screenshot.png)
 
@@ -86,7 +97,7 @@ go build -trimpath -ldflags "-s -w" -o bin/ghaccel ./cmd/ghaccel
 打包全部平台：
 
 ```powershell
-.\scripts\build-release.ps1 -Version 0.1.0
+.\scripts\build-release.ps1 -Version 0.1.1
 ```
 
 产物在 `dist/`，包含压缩包和校验和。
