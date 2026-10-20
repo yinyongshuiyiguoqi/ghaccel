@@ -45,6 +45,13 @@ type App struct {
 }
 
 func Run() error {
+	handle, ok := acquireSingleInstance()
+	if !ok {
+		showAlreadyRunning()
+		return nil
+	}
+	defer releaseSingleInstance(handle)
+
 	cfg, err := config.Load("")
 	if err != nil {
 		return err

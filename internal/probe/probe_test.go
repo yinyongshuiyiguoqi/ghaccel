@@ -14,6 +14,7 @@ import (
 func TestProbeTLSVerified(t *testing.T) {
 	srv := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte("ok"))
 	}))
 	defer srv.Close()
 	pool := x509.NewCertPool()
@@ -37,6 +38,36 @@ func TestProbeTLSVerified(t *testing.T) {
 	}
 	if res.HTTPStatus != 200 {
 		t.Fatalf("expected HTTP 200, got %d (%s)", res.HTTPStatus, res.HTTPError)
+	}
+}
+
+func TestProbeStalledBodyNotViable(t *testing.T) {
+	srv := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		if f, ok := w.(http.Flusher); ok {
+			f.Flush()
+		}
+		time.Sleep(2 * time.Second)
+	}))
+	defer srv.Close()
+	pool := x509.NewCertPool()
+	pool.AddCert(srv.Certificate())
+	domain := srv.Certificate().DNSNames[0]
+	port := srv.Listener.Addr().(*net.TCPAddr).Port
+
+	p := New(Options{
+		Attempts:       1,
+		TCPTimeout:     2 * time.Second,
+		TLSTimeout:     2 * time.Second,
+		AttemptTimeout: 3 * time.Second,
+		HTTPHead:       true,
+		HTTPTimeout:    500 * time.Millisecond,
+		MinSuccesses:   1,
+		RootCAs:        pool,
+	}, 1)
+	res := p.Probe(context.Background(), Job{Domain: domain, IP: "127.0.0.1", Port: port})
+	if res.Viable {
+		t.Fatal("an IP whose HTTP body stalls must not be viable")
 	}
 }
 

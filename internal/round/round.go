@@ -148,6 +148,9 @@ func Execute(ctx context.Context, cfg config.Config, list []string, prev state.S
 			}
 		}
 
+		// Keep a previous IP only when we could not probe at all (resolution
+		// failure). If probes ran and all failed, pinning the old address would
+		// keep the domain broken; fall back to DNS instead.
 		out := Outcome{Domain: d, Candidates: len(rs)}
 		switch {
 		case best != nil:
@@ -155,7 +158,7 @@ func Execute(ctx context.Context, cfg config.Config, list []string, prev state.S
 			out.Score = best.Score
 			out.Sources = best.Sources
 			out.Verified = true
-		case hasPrev && cfg.Selection.OnNoCandidate == "keep" && prevSel.IP != "":
+		case hasPrev && cfg.Selection.OnNoCandidate == "keep" && prevSel.IP != "" && len(rs) == 0:
 			out.IP = prevSel.IP
 			out.Sources = prevSel.Sources
 			out.Degraded = true

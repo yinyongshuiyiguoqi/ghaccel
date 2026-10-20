@@ -187,33 +187,58 @@ func (p *Prober) attempt(ctx context.Context, domain, ip string, port int) (tcp,
 	tlsDur = time.Since(start)
 
 	if p.opts.HTTPHead {
-		httpDur, status, httpErr = head(tlsConn, domain, p.opts.HTTPTimeout)
+		httpDur, status, httpErr = httpCheck(tlsConn, domain, p.opts.HTTPTimeout)
+		if httpErr != "" {
+			// TLS may succeed while the HTTP stream is blocked or reset.
+			// Such an IP cannot actually serve the site, so treat it as failed.
+			return tcp, tlsDur, httpDur, status, httpErr, fmt.Errorf("http check: %s", httpErr)
+		}
 	}
 	return tcp, tlsDur, httpDur, status, httpErr, nil
 }
 
-func head(conn *tls.Conn, domain string, timeout time.Duration) (time.Duration, int, string) {
+// httpCheck performs a small ranged GET rather than a HEAD: some paths complete
+// the TLS handshake and even return a status line, then stall the body. HEAD
+// would call that healthy, while the page is actually unusable.
+func httpCheck(conn *tls.Conn, domain string, timeout time.Duration) (time.Duration, int, string) {
 	start := time.Now()
-	_ = conn.SetWriteDeadline(time.Now().Add(timeout))
-	req := fmt.Sprintf("HEAD / HTTP/1.1\r\nHost: %s\r\nUser-Agent: ghaccel/0.1\r\nAccept: */*\r\nConnection: close\r\n\r\n", domain)
+	_ = conn.SetDeadline(time.Now().Add(timeout))
+	req := fmt.Sprintf("GET / HTTP/1.1\r\nHost: %s\r\nUser-Agent: ghaccel/0.1\r\nAccept: */*\r\nRange: bytes=0-2047\r\nConnection: close\r\n\r\n", domain)
 	if _, err := io.WriteString(conn, req); err != nil {
 		return time.Since(start), 0, errString(err)
 	}
-	_ = conn.SetReadDeadline(time.Now().Add(timeout))
-	line, err := bufio.NewReader(conn).ReadString('\n')
-	dur := time.Since(start)
+	br := bufio.NewReader(conn)
+	line, err := br.ReadString('\n')
 	if err != nil {
-		return dur, 0, errString(err)
+		return time.Since(start), 0, errString(err)
 	}
 	fields := strings.Fields(line)
 	if len(fields) < 2 {
-		return dur, 0, "malformed status line"
+		return time.Since(start), 0, "malformed status line"
 	}
 	code, err := strconv.Atoi(fields[1])
 	if err != nil {
-		return dur, 0, "malformed status code"
+		return time.Since(start), 0, "malformed status code"
 	}
-	return dur, code, ""
+	for {
+		h, err := br.ReadString('\n')
+		if err != nil {
+			return time.Since(start), code, errString(err)
+		}
+		if h == "\r\n" || h == "\n" {
+			break
+		}
+	}
+	// Redirects and no-content responses often have no body; a status line and
+	// headers are the whole response and are enough to prove the path works.
+	if code == 204 || code == 304 || (code >= 300 && code < 400) {
+		return time.Since(start), code, ""
+	}
+	buf := make([]byte, 1024)
+	if _, err := io.ReadAtLeast(br, buf, 1); err != nil {
+		return time.Since(start), code, "body stalled: " + errString(err)
+	}
+	return time.Since(start), code, ""
 }
 
 type ErrorClass string
