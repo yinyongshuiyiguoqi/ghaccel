@@ -20,6 +20,7 @@ func cmdInit(args []string) int {
 	}
 
 	cfg := config.Default()
+	cfg.ApplyDefaults()
 	path := g.configPath
 	if path == "" {
 		p, err := config.DefaultPath()

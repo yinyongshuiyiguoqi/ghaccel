@@ -210,7 +210,7 @@ func Load(path string) (Config, error) {
 	}
 	b, err := os.ReadFile(path)
 	if errors.Is(err, os.ErrNotExist) {
-		cfg.applyPaths()
+		cfg.ApplyDefaults()
 		return cfg, nil
 	}
 	if err != nil {
@@ -220,7 +220,7 @@ func Load(path string) (Config, error) {
 	if err := json.Unmarshal(b, &cfg); err != nil {
 		return cfg, fmt.Errorf("parse %s: %w", path, err)
 	}
-	cfg.applyPaths()
+	cfg.ApplyDefaults()
 	return cfg, cfg.Validate()
 }
 
@@ -232,7 +232,7 @@ func Save(path string, cfg Config) error {
 		}
 		path = p
 	}
-	cfg.applyPaths()
+	cfg.ApplyDefaults()
 	if err := cfg.Validate(); err != nil {
 		return err
 	}
@@ -247,7 +247,8 @@ func Save(path string, cfg Config) error {
 	return os.WriteFile(path, b, 0o644)
 }
 
-func (c *Config) applyPaths() {
+// ApplyDefaults fills platform-specific paths that are empty.
+func (c *Config) ApplyDefaults() {
 	if c.Hosts.Path == "" {
 		c.Hosts.Path = DefaultHostsPath()
 	}
