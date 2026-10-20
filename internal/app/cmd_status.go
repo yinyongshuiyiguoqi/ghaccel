@@ -9,10 +9,10 @@ import (
 	"text/tabwriter"
 	"time"
 
-	"github.com/OWNER/ghaccel/internal/config"
-	"github.com/OWNER/ghaccel/internal/daemon"
-	"github.com/OWNER/ghaccel/internal/hosts"
-	"github.com/OWNER/ghaccel/internal/state"
+	"github.com/yinyongshuiyiguoqi/ghaccel/internal/config"
+	"github.com/yinyongshuiyiguoqi/ghaccel/internal/daemon"
+	"github.com/yinyongshuiyiguoqi/ghaccel/internal/hosts"
+	"github.com/yinyongshuiyiguoqi/ghaccel/internal/state"
 )
 
 type statusOutput struct {

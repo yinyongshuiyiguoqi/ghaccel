@@ -31,7 +31,7 @@ jobs:
           GOARCH: ${{ matrix.goarch }}
           CGO_ENABLED: "0"
         run: |
-          go build -trimpath -ldflags "-s -w -X github.com/OWNER/ghaccel/internal/version.Version=${GITHUB_REF_NAME}" \
+          go build -trimpath -ldflags "-s -w -X github.com/yinyongshuiyiguoqi/ghaccel/internal/version.Version=${GITHUB_REF_NAME}" \
             -o ghaccel${{ matrix.ext }} ./cmd/ghaccel
           mkdir -p dist
           if [ "${{ matrix.goos }}" = "windows" ]; then

@@ -8,7 +8,7 @@ import (
 	"net/netip"
 	"sort"
 
-	"github.com/OWNER/ghaccel/internal/domains"
+	"github.com/yinyongshuiyiguoqi/ghaccel/internal/domains"
 )
 
 const DefaultMaxCandidates = 6

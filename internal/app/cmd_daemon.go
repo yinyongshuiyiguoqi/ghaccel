@@ -16,11 +16,11 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/OWNER/ghaccel/internal/config"
-	"github.com/OWNER/ghaccel/internal/daemon"
-	"github.com/OWNER/ghaccel/internal/domains"
-	"github.com/OWNER/ghaccel/internal/hosts"
-	"github.com/OWNER/ghaccel/internal/state"
+	"github.com/yinyongshuiyiguoqi/ghaccel/internal/config"
+	"github.com/yinyongshuiyiguoqi/ghaccel/internal/daemon"
+	"github.com/yinyongshuiyiguoqi/ghaccel/internal/domains"
+	"github.com/yinyongshuiyiguoqi/ghaccel/internal/hosts"
+	"github.com/yinyongshuiyiguoqi/ghaccel/internal/state"
 )
 
 func cmdDaemon(args []string) int {

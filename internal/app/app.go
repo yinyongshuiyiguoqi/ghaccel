@@ -7,8 +7,8 @@ import (
 	"os"
 	"runtime"
 
-	"github.com/OWNER/ghaccel/internal/config"
-	"github.com/OWNER/ghaccel/internal/version"
+	"github.com/yinyongshuiyiguoqi/ghaccel/internal/config"
+	"github.com/yinyongshuiyiguoqi/ghaccel/internal/version"
 )
 
 const (

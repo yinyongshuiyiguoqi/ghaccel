@@ -15,7 +15,7 @@ no root certificate, no system proxy, no traffic interception.
 ## Install
 
 ```bash
-go install github.com/OWNER/ghaccel/cmd/ghaccel@latest
+go install github.com/yinyongshuiyiguoqi/ghaccel/cmd/ghaccel@latest
 ```
 
 ## Usage

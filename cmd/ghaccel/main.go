@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"github.com/OWNER/ghaccel/internal/app"
+	"github.com/yinyongshuiyiguoqi/ghaccel/internal/app"
 )
 
 func main() {

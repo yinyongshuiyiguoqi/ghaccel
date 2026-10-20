@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/OWNER/ghaccel/internal/config"
+	"github.com/yinyongshuiyiguoqi/ghaccel/internal/config"
 )
 
 func cmdInit(args []string) int {

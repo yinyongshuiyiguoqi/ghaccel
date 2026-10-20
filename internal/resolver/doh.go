@@ -15,7 +15,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/OWNER/ghaccel/internal/config"
+	"github.com/yinyongshuiyiguoqi/ghaccel/internal/config"
 )
 
 type dohAnswer struct {

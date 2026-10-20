@@ -2,6 +2,8 @@
 
 GitHub 专用开源加速器：智能 DNS + hosts，不改网络栈、不装证书、不接管代理。
 
+仓库：<https://github.com/yinyongshuiyiguoqi/ghaccel>
+
 它解决的是「GitHub 解析慢、解析到不可达 IP、raw / codeload / objects 时快时慢」这一类问题，
 而不是「IP 被完全封锁」——后者 hosts 无能为力，README 末尾会写清楚边界。
 
@@ -28,18 +30,16 @@ DoH（阿里 / DNSPod） ─┐
 需要 Go 1.27+：
 
 ```bash
-go install github.com/OWNER/ghaccel/cmd/ghaccel@latest
+go install github.com/yinyongshuiyiguoqi/ghaccel/cmd/ghaccel@latest
 ```
 
 或从 Releases 下载对应平台的压缩包。自行构建：
 
 ```bash
-git clone https://github.com/OWNER/ghaccel.git
+git clone https://github.com/yinyongshuiyiguoqi/ghaccel.git
 cd ghaccel
 go build -trimpath -ldflags "-s -w" -o bin/ghaccel ./cmd/ghaccel
 ```
-
-> `OWNER` 是占位符，发布前替换成实际 GitHub 用户名（`go.mod` 与 import 路径同步修改）。
 
 ## 快速开始
 

@@ -10,12 +10,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/OWNER/ghaccel/internal/config"
-	"github.com/OWNER/ghaccel/internal/hosts"
-	"github.com/OWNER/ghaccel/internal/probe"
-	"github.com/OWNER/ghaccel/internal/resolver"
-	"github.com/OWNER/ghaccel/internal/state"
-	"github.com/OWNER/ghaccel/internal/version"
+	"github.com/yinyongshuiyiguoqi/ghaccel/internal/config"
+	"github.com/yinyongshuiyiguoqi/ghaccel/internal/hosts"
+	"github.com/yinyongshuiyiguoqi/ghaccel/internal/probe"
+	"github.com/yinyongshuiyiguoqi/ghaccel/internal/resolver"
+	"github.com/yinyongshuiyiguoqi/ghaccel/internal/state"
+	"github.com/yinyongshuiyiguoqi/ghaccel/internal/version"
 )
 
 type doctorCheck struct {

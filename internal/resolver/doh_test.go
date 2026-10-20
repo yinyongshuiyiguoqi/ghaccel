@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/OWNER/ghaccel/internal/config"
+	"github.com/yinyongshuiyiguoqi/ghaccel/internal/config"
 )
 
 func testLogger() *slog.Logger {
