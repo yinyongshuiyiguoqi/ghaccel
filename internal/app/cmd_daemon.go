@@ -20,6 +20,7 @@ import (
 	"github.com/yinyongshuiyiguoqi/ghaccel/internal/daemon"
 	"github.com/yinyongshuiyiguoqi/ghaccel/internal/domains"
 	"github.com/yinyongshuiyiguoqi/ghaccel/internal/hosts"
+	roundpkg "github.com/yinyongshuiyiguoqi/ghaccel/internal/round"
 	"github.com/yinyongshuiyiguoqi/ghaccel/internal/state"
 )
 
@@ -204,32 +205,18 @@ func daemonRound(ctx context.Context, cfg config.Config, log *slog.Logger) error
 	}, backupDir, cfg.Hosts.BackupCount, cfg.Hosts.FlushDNS, cfg.Hosts.MaxFileBytes)
 	m.ConflictPolicy = cfg.Hosts.ConflictPolicy
 
-	round, err := executeRound(ctx, cfg, list, prev, false, m, log)
+	res, err := roundpkg.Execute(ctx, cfg, list, prev, false, m, log)
 	if err != nil {
 		return err
 	}
-	sel := map[string]state.Selection{}
-	for _, d := range round.Domains {
-		if d.IP != "" {
-			sel[d.Domain] = state.Selection{IP: d.IP, Score: d.Score, Verified: d.Verified, Sources: d.Sources}
-		}
-	}
-	st := state.State{
-		SchemaVersion: 1,
-		LastRound:     time.Now(),
-		DurationMS:    round.DurationMS,
-		Selected:      sel,
-		Degraded:      round.Degraded,
-		Changed:       round.Changed,
-	}
-	if err := state.Save(cfg.Daemon.StateFile, st); err != nil {
+	if err := state.Save(cfg.Daemon.StateFile, roundpkg.StateFrom(res)); err != nil {
 		log.Warn("save state", "err", err)
 	}
 	log.Info("round complete",
-		"domains", len(round.Domains),
-		"degraded", len(round.Degraded),
-		"changed", round.Changed,
-		"duration_ms", round.DurationMS,
+		"domains", len(res.Domains),
+		"degraded", len(res.Degraded),
+		"changed", res.Changed,
+		"duration_ms", res.DurationMS,
 	)
 	return nil
 }

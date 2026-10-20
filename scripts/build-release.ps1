@@ -49,6 +49,12 @@ foreach ($t in $targets) {
     & $go build -trimpath -ldflags $ldflags -o $bin ./cmd/ghaccel
     if ($LASTEXITCODE -ne 0) { throw "build failed for $name" }
 
+    if ($t.os -eq "windows") {
+        $gui = Join-Path $dir "ghaccel-gui.exe"
+        & $go build -trimpath -ldflags "$ldflags -H=windowsgui" -o $gui ./cmd/ghaccel-gui
+        if ($LASTEXITCODE -ne 0) { throw "gui build failed for $name" }
+    }
+
     Copy-Item -Path README.md, README.en.md, LICENSE -Destination $dir
 
     if ($t.os -eq "windows") {

@@ -55,6 +55,18 @@ Get-FileHash .\ghaccel_0.1.0_windows_amd64.zip -Algorithm SHA256
 
 > 未做代码签名，Windows SmartScreen 可能提示“未知发布者”。请先核对 `sha256sums.txt` 再运行。
 
+### 桌面应用（Windows）
+
+Windows 压缩包里同时包含 `ghaccel-gui.exe`，不习惯命令行的直接用它：
+
+- 双击启动，会请求管理员权限（写 hosts 必需）
+- 主窗口显示状态、每个域名的 IP / 评分 / 来源，以及运行日志
+- 按钮：开始加速、停止、立即刷新、恢复 hosts、打开日志
+- 关闭窗口会最小化到系统托盘，加速继续在后台刷新
+- 托盘右键菜单：显示主窗口、开始 / 停止、立即刷新、退出
+
+![ghaccel 桌面应用](assets/screenshot.png)
+
 ### 用 Go 安装
 
 需要 Go 1.27+：
