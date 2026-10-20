@@ -17,6 +17,7 @@ if (-not $go) {
 $env:GOTOOLCHAIN = "local"
 $env:CGO_ENABLED = "0"
 $commit = (git rev-parse --short HEAD)
+$buildDate = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
 $dist = Join-Path $root "dist"
 $stage = Join-Path $dist ".stage"
 
@@ -33,7 +34,8 @@ $targets = @(
 )
 
 $ldflags = "-s -w -X github.com/yinyongshuiyiguoqi/ghaccel/internal/version.Version=$Version " +
-           "-X github.com/yinyongshuiyiguoqi/ghaccel/internal/version.Commit=$commit"
+           "-X github.com/yinyongshuiyiguoqi/ghaccel/internal/version.Commit=$commit " +
+           "-X github.com/yinyongshuiyiguoqi/ghaccel/internal/version.BuildDate=$buildDate"
 
 foreach ($t in $targets) {
     $env:GOOS = $t.os
